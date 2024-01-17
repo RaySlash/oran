@@ -1,4 +1,4 @@
-# Oran
+# Oran 🫐
 A simple text editor made in rust. This is currently WIP. I am writing this to improve my knowledge in computing. This is a flake.
 
 ### Usage
