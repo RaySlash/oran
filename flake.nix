@@ -28,7 +28,10 @@
           rust-toolchain =
             pkgs.rust-bin.fromRustupToolchainFile ./toolchain.toml;
 
-          buildDeps = with pkgs; [ ];
+            buildDeps = with pkgs; [
+              ncurses
+              gcc
+            ];
 
           mkDevShell = rust-toolchain:
             pkgs.mkShell {
