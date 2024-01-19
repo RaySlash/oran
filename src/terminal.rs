@@ -38,7 +38,7 @@ impl Terminal {
     }
 
     pub fn flush() {
-        io::stdout().flush();
+        let _ = io::stdout().flush();
     }
 
     pub fn read_key() -> Result<Key, Error> {
@@ -47,5 +47,17 @@ impl Terminal {
                 return key;
             }
         }
+    }
+
+    pub fn cursor_hide() {
+        print!("{}", termion::cursor::Hide);
+    }
+
+    pub fn cursor_show() {
+        print!("{}", termion::cursor::Show);
+    }
+
+    pub fn clear_current_line() {
+        print!("{}", termion::clear::CurrentLine);
     }
 }
