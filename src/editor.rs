@@ -1,16 +1,14 @@
-use std::io::{self, stdout, Error, Write};
+use crate::Terminal;
+use std::io::Error;
 use termion::event::Key;
-use termion::input::TermRead;
-use termion::raw::IntoRawMode;
 
 pub struct Editor {
     quit: bool,
+    terminal: Terminal,
 }
 
 impl Editor {
     pub fn run(&mut self) {
-        let _stdout = stdout().into_raw_mode().unwrap();
-
         loop {
             if let Err(error) = self.refresh_screen() {
                 panic_program(&error);
@@ -25,44 +23,41 @@ impl Editor {
     }
 
     pub fn default() -> Self {
-        Self { quit: false }
+        Self {
+            quit: false,
+            terminal: Terminal::default().expect("Failed to initialize terminal"),
+        }
     }
 
     fn refresh_screen(&self) -> Result<(), Error> {
-        println!("{}{}", termion::clear::All, termion::cursor::Goto(1, 1));
+        Terminal::clear_screen();
+        Terminal::cursor_position(0, 0);
         if self.quit {
             println!("Goodbye. \r");
         } else {
             self.draw_rows();
-            print!("{}", termion::cursor::Goto(1, 1));
+            Terminal::cursor_position(0, 0);
         }
-        io::stdout().flush()
+        Ok(Terminal::flush())
     }
 
     fn process_keypress(&mut self) -> Result<(), Error> {
-        let pressed_key = read_key()?;
+        let pressed_key = Terminal::read_key()?;
         match pressed_key {
             Key::Ctrl('q') => self.quit = true,
             _ => (),
         }
         Ok(())
     }
+
     fn draw_rows(&self) {
-        for _ in 0..24 {
+        for _ in 0..self.terminal.size().height - 1 {
             println!("~\r")
         }
     }
 }
 
-fn read_key() -> Result<Key, Error> {
-    loop {
-        if let Some(key) = io::stdin().lock().keys().next() {
-            return key;
-        }
-    }
-}
-
 fn panic_program(e: &Error) {
-    print!("{}", termion::clear::All);
+    Terminal::clear_screen();
     panic!("{}", e);
 }
