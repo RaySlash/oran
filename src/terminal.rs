@@ -1,3 +1,4 @@
+use crate::Position;
 use std::io::{self, stdout, Error, Write};
 use termion::raw::{IntoRawMode, RawTerminal};
 use termion::{event::Key, input::TermRead};
@@ -31,9 +32,13 @@ impl Terminal {
         print!("{}", termion::clear::All);
     }
 
-    pub fn cursor_position(x: u16, y: u16) {
+    #[allow(clippy::cast_possible_truncation)]
+    pub fn cursor_position(position: &Position) {
+        let Position { mut x, mut y } = position;
         let x = x.saturating_add(1);
         let y = y.saturating_add(1);
+        let x = x as u16;
+        let y = y as u16;
         print!("{}", termion::cursor::Goto(x, y));
     }
 
